@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "How Much Home Can You Afford? | BudgetCheck",
+  title: "Avery Home Group — How Much Home Can You Afford?",
   description:
-    "Get a real, personalized home price range in under a minute — using today's live mortgage rates and your state's taxes.",
+    "Get a real, personalized home price range in under a minute — using today's live mortgage rates and your state's taxes. Then connect with Jordan Avery to make it happen.",
 };
 
 export default function RootLayout({
