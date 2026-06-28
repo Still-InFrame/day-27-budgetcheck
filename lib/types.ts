@@ -29,7 +29,12 @@ export interface Insight {
   label: string;
   /** Dollar change to the comfortable price (can be positive or negative). */
   priceDelta: number;
+  /** Plain-English reason this move helps (personalized). */
+  detail: string;
 }
+
+/** What's currently capping the buyer's comfortable budget. */
+export type LimitingFactor = "income" | "debts" | "comfort";
 
 export interface AffordabilityResult {
   qualified: boolean;
@@ -39,6 +44,7 @@ export interface AffordabilityResult {
   stateCode: string; // the state these tax/insurance figures are for
   propertyTaxRatePct: number; // e.g. 0.82 (% of home value), for display
   insuranceAnnual: number; // state average annual premium, for display
+  limitingFactor: LimitingFactor; // what's capping the comfortable budget
   priceLow: number; // comfortable (28/36 DTI, capped by comfort payment)
   priceHigh: number; // stretch (31/43 DTI)
   breakdown: PaymentBreakdown; // computed at priceLow (the comfortable number)

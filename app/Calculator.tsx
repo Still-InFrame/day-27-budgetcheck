@@ -677,22 +677,30 @@ function Results({
       {result.insights.length > 0 && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <h3 className="text-lg font-bold text-slate-900">What could change your number</h3>
-          <p className="mb-4 text-sm text-slate-500">Small moves, real impact on your budget.</p>
+          <p className="mb-3 text-sm text-slate-500">
+            Each move shows how much more home you could afford.
+          </p>
+
+          {/* personalized: what's limiting this buyer right now */}
+          <p className="mb-4 rounded-xl bg-[var(--accent)]/5 px-4 py-3 text-sm leading-relaxed text-slate-600">
+            {limitingFactorNote(result, inputs)}
+          </p>
+
           <ul className="space-y-2.5">
             {result.insights.map((i) => (
-              <li
-                key={i.label}
-                className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3"
-              >
-                <span className="text-sm text-slate-700">{i.label}</span>
-                <span
-                  className={`shrink-0 text-sm font-bold ${
-                    i.priceDelta >= 0 ? "text-emerald-600" : "text-red-500"
-                  }`}
-                >
-                  {i.priceDelta >= 0 ? "+" : "−"}
-                  {moneyShort(Math.abs(i.priceDelta))}
-                </span>
+              <li key={i.label} className="rounded-xl bg-slate-50 px-4 py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-sm font-semibold text-slate-800">{i.label}</span>
+                  <span className="shrink-0 text-right">
+                    <span className="block text-sm font-bold text-emerald-600">
+                      +{moneyShort(Math.abs(i.priceDelta))}
+                    </span>
+                    <span className="block text-[10px] uppercase tracking-wide text-slate-400">
+                      more home
+                    </span>
+                  </span>
+                </div>
+                <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{i.detail}</p>
               </li>
             ))}
           </ul>
@@ -718,6 +726,24 @@ function Results({
 
 function stateName(code: string): string {
   return US_STATES.find((s) => s.code === code)?.name ?? "Your state";
+}
+
+/** Personalized explanation of what's currently capping this buyer's budget. */
+function limitingFactorNote(
+  result: AffordabilityResult,
+  inputs: Partial<AffordabilityInputs>,
+): string {
+  switch (result.limitingFactor) {
+    case "debts":
+      return "Right now, your monthly debts are what's holding your budget back — lenders count them against how much you can put toward a home, so paying them down would raise your number the most.";
+    case "comfort":
+      return `Your budget is set by the ${money(
+        inputs.comfortPayment ?? 0,
+      )}/mo payment you said you're comfortable with — which is below what you'd qualify for. Nudging that up would lift your range.`;
+    case "income":
+    default:
+      return "Right now, your income is what's setting your budget — lenders cap your housing payment near 28% of it, and your debts aren't the bottleneck. That's why adding to your down payment (or earning a lower rate) moves your number more than paying down debt would.";
+  }
 }
 
 function Row({

@@ -7,6 +7,7 @@ import type {
   AffordabilityInputs,
   AffordabilityResult,
   Insight,
+  LimitingFactor,
   PaymentBreakdown,
 } from "@/lib/types";
 
@@ -72,14 +73,21 @@ function housingCeilings(inputs: AffordabilityInputs) {
       Math.min(grossMonthly * frontEnd, grossMonthly * backEnd - inputs.monthlyDebts),
     );
 
+  // Which DTI rule binds the comfortable budget — front-end (income alone) or
+  // back-end (income minus other debts)?
+  const frontCap = grossMonthly * DTI.comfortable.frontEnd;
+  const backCap = grossMonthly * DTI.comfortable.backEnd - inputs.monthlyDebts;
   let comfortable = ceiling(DTI.comfortable.frontEnd, DTI.comfortable.backEnd);
   const stretch = ceiling(DTI.stretch.frontEnd, DTI.stretch.backEnd);
 
+  let limitingFactor: LimitingFactor = frontCap <= backCap ? "income" : "debts";
+
   // The buyer's stated comfort caps the "comfortable" number (never the stretch).
-  if (inputs.comfortPayment && inputs.comfortPayment > 0) {
-    comfortable = Math.min(comfortable, inputs.comfortPayment);
+  if (inputs.comfortPayment && inputs.comfortPayment > 0 && inputs.comfortPayment < comfortable) {
+    comfortable = inputs.comfortPayment;
+    limitingFactor = "comfort";
   }
-  return { comfortable, stretch };
+  return { comfortable, stretch, limitingFactor };
 }
 
 /** Price for a tweaked copy of the inputs — used for "what changes your number". */
@@ -106,7 +114,12 @@ function buildInsights(
     { ...inputs, downPayment: inputs.downPayment + 10_000 },
     currentRate,
   );
-  insights.push({ label: "Add $10,000 to your down payment", priceDelta: moreDown - basePrice });
+  insights.push({
+    label: "Add $10,000 to your down payment",
+    priceDelta: moreDown - basePrice,
+    detail:
+      "A bigger down payment goes toward your price and can lower your monthly mortgage insurance — raising what you can comfortably afford.",
+  });
 
   // Lever 2: pay down $250/mo of debt (only meaningful if they have debt).
   if (inputs.monthlyDebts > 0) {
@@ -117,6 +130,8 @@ function buildInsights(
     insights.push({
       label: "Reduce monthly debts by $250",
       priceDelta: lessDebt - basePrice,
+      detail:
+        "Lenders cap your total monthly obligations, so every dollar of debt you clear is a dollar they let you put toward a mortgage instead.",
     });
   }
 
@@ -128,6 +143,8 @@ function buildInsights(
     insights.push({
       label: `Raise your credit to ${better.label}`,
       priceDelta: betterPrice - basePrice,
+      detail:
+        "A higher score earns a lower interest rate, so the same monthly payment covers a bigger loan — and a pricier home.",
     });
   }
 
@@ -145,7 +162,7 @@ export function calculateAffordability(
   const tier = creditTier(inputs.creditRange);
   const rate = baseRate + tier.spread;
 
-  const { comfortable, stretch } = housingCeilings(inputs);
+  const { comfortable, stretch, limitingFactor } = housingCeilings(inputs);
   const lowBreakdown = solvePrice(comfortable, inputs, rate);
   const highBreakdown = solvePrice(stretch, inputs, rate);
 
@@ -160,6 +177,7 @@ export function calculateAffordability(
     stateCode: inputs.state,
     propertyTaxRatePct: propertyTaxRate(inputs.state) * 100,
     insuranceAnnual: insuranceAnnual(inputs.state),
+    limitingFactor,
     priceLow: lowBreakdown.price,
     priceHigh: Math.max(highBreakdown.price, lowBreakdown.price),
     breakdown: lowBreakdown,
