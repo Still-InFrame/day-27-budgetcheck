@@ -58,7 +58,8 @@ export interface LeadContact {
 
 export interface SubmitResult {
   ok: boolean;
-  result?: AffordabilityResult;
+  /** UUID of the stored lead — used to route to /r/[id]. */
+  resultId?: string;
   error?: string;
 }
 
@@ -75,12 +76,6 @@ export async function submitLead(
   const baseRate = await getBaseRate();
   const result = calculateAffordability(inputs, baseRate);
 
-  // Honeypot: bots fill hidden fields. Silently skip storage, still return the
-  // result so a real user is never blocked by a false positive.
-  if (contact.company && contact.company.trim() !== "") {
-    return { ok: true, result };
-  }
-
   const first = contact.firstName?.trim();
   const last = contact.lastName?.trim();
   const email = contact.email?.trim();
@@ -91,10 +86,17 @@ export async function submitLead(
   if (!contact.consent) {
     return { ok: false, error: "Please agree to be contacted to see your results." };
   }
+  // Honeypot: a real human never fills this hidden field — drop obvious bots.
+  if (contact.company && contact.company.trim() !== "") {
+    return { ok: false, error: "Something went wrong. Please try again." };
+  }
 
+  // The lead id doubles as the UUID for the shareable results page (/r/[id]).
+  const id = crypto.randomUUID();
   try {
     const supabase = getSupabase();
     const { error } = await supabase.from("budgetcheck_leads").insert({
+      id,
       realtor_id: REALTOR.id,
       first_name: first,
       last_name: last,
@@ -119,5 +121,5 @@ export async function submitLead(
     return { ok: false, error: "Something went wrong saving your info. Please try again." };
   }
 
-  return { ok: true, result };
+  return { ok: true, resultId: id };
 }

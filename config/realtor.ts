@@ -35,13 +35,13 @@ export const REALTOR: Realtor = {
   tagline: "Miami native, Cuban-American, and your tech-forward advisor for buying right.",
   bio: [
     "A Miami native and proud Cuban-American, Savion brings entrepreneurial drive and a fearless approach to every client he serves. More than an agent, he's a trusted advisor — leading with honesty, empathy, and respect, and connecting easily with people from all walks of life.",
-    "Self-taught and tech-forward, Savion founded the Miami marketing agency Managed Marketing Partners, sharpened his business instincts at Apple, and earned an FAA Remote Pilot certification that gives his listings a cutting-edge marketing edge. Grounded in family and community, he's devoted to his clients' success — and to making the path to homeownership clear, confident, and genuinely enjoyable.",
+    "Self-taught and tech-forward, Savion founded the Miami marketing agency Managed Marketing Partners, sharpened his business instincts at a top technology company, and earned an FAA Remote Pilot certification that gives his listings a cutting-edge marketing edge. Grounded in family and community, he's devoted to his clients' success — and to making the path to homeownership clear, confident, and genuinely enjoyable.",
   ],
   area: "Miami",
   highlights: [
     { value: "Born & Raised in Miami", label: "Deep, street-level local expertise" },
-    { value: "Fluent in English & Spanish", label: "Full-service for every buyer" },
-    { value: "Apple-Trained Strategist", label: "Business & negotiation honed at Apple" },
+    { value: "Marketing Agency Founder", label: "Your home marketed like a brand" },
+    { value: "Top-Tech Trained", label: "Strategy & negotiation from big tech" },
     { value: "FAA-Licensed Drone Pilot", label: "Cinematic marketing few agents offer" },
   ],
 };

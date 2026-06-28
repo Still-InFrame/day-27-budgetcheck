@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CREDIT_TIERS } from "@/config/credit-spreads";
 import { US_STATES } from "@/config/insurance-by-state";
@@ -56,11 +57,6 @@ export default function Calculator() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<FormState>(EMPTY);
   const [teaser, setTeaser] = useState<AffordabilityResult | null>(null);
-  const [result, setResult] = useState<AffordabilityResult | null>(null);
-  const [personal, setPersonal] = useState<{ firstName: string; buyingTimeline: string }>({
-    firstName: "",
-    buyingTimeline: "",
-  });
   const [loading, setLoading] = useState(false);
 
   const set = (k: keyof FormState, v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -93,32 +89,7 @@ export default function Calculator() {
           onFinish={finishWizard}
         />
       )}
-      {phase === "gate" && teaser && (
-        <Gate
-          teaser={teaser}
-          inputs={toInputs(form)}
-          onUnlock={(r, p) => {
-            setResult(r);
-            setPersonal(p);
-            setPhase("results");
-          }}
-        />
-      )}
-      {phase === "results" && result && (
-        <Results
-          result={result}
-          inputs={toInputs(form)}
-          personal={personal}
-          onRestart={() => {
-            setForm(EMPTY);
-            setStep(0);
-            setTeaser(null);
-            setResult(null);
-            setPersonal({ firstName: "", buyingTimeline: "" });
-            setPhase("wizard");
-          }}
-        />
-      )}
+      {phase === "gate" && teaser && <Gate teaser={teaser} inputs={toInputs(form)} />}
     </div>
   );
 }
@@ -319,12 +290,11 @@ function MoneyInput({
 function Gate({
   teaser,
   inputs,
-  onUnlock,
 }: {
   teaser: AffordabilityResult;
   inputs: Partial<AffordabilityInputs>;
-  onUnlock: (r: AffordabilityResult, p: { firstName: string; buyingTimeline: string }) => void;
 }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [c, setC] = useState({
@@ -348,11 +318,12 @@ function Gate({
     try {
       const contact: LeadContact = { ...c };
       const res = await submitLead(contact, inputs);
-      if (!res.ok || !res.result) {
+      if (!res.ok || !res.resultId) {
         setError(res.error ?? "Something went wrong. Please try again.");
         return;
       }
-      onUnlock(res.result, { firstName: c.firstName.trim(), buyingTimeline: c.buyingTimeline });
+      router.push(`/r/${res.resultId}`);
+      return;
     } finally {
       setLoading(false);
     }
