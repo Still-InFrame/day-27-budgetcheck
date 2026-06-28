@@ -160,47 +160,39 @@ export default function VideoPlayer({ videoId, accent }: { videoId: string; acce
         <div ref={holderRef} className="h-full w-full [&>iframe]:h-full [&>iframe]:w-full" />
       </div>
 
-      {/* click layer to pause during playback — keeps every click off the YouTube
-          iframe so its hover UI never appears */}
+      {/* poster covers the iframe (and its title) until first play */}
+      {!started && (
+        <img
+          src={poster}
+          alt=""
+          onError={() => setPosterOk(false)}
+          className="absolute inset-0 z-10 h-full w-full object-cover"
+        />
+      )}
+
+      {/* subtle top vignette masks any title peek */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-black/40 to-transparent" />
+
+      {/* click anywhere to toggle play/pause */}
       <button
         type="button"
-        aria-label="Pause"
+        aria-label={playing ? "Pause" : "Play"}
         onClick={toggle}
         className="absolute inset-0 z-20 h-full w-full cursor-pointer"
       />
 
-      {/* Opaque cover whenever NOT playing. YouTube shows its title, control bar,
-          logo, and end-screen suggestions on pause/stop regardless of embed params,
-          so we simply cover the whole player until it's playing again. */}
+      {/* center play button when paused */}
       {!playing && (
-        <button
-          type="button"
-          aria-label="Play"
-          onClick={toggle}
-          className="absolute inset-0 z-30 flex h-full w-full cursor-pointer items-center justify-center"
-        >
-          {started ? (
-            <span className="absolute inset-0 bg-slate-950" />
-          ) : (
-            <>
-              <img
-                src={poster}
-                alt=""
-                onError={() => setPosterOk(false)}
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <span className="absolute inset-0 bg-black/30" />
-            </>
-          )}
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
           <span
-            className="relative flex h-16 w-16 items-center justify-center rounded-full text-white shadow-lg transition group-hover:scale-105"
+            className="flex h-16 w-16 items-center justify-center rounded-full text-white shadow-lg"
             style={{ background: accent }}
           >
             <svg viewBox="0 0 24 24" className="ml-1 h-7 w-7" fill="currentColor" aria-hidden>
               <path d="M8 5v14l11-7z" />
             </svg>
           </span>
-        </button>
+        </div>
       )}
 
       {/* custom controls */}

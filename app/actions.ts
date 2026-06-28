@@ -94,7 +94,7 @@ export async function submitLead(
 
   try {
     const supabase = getSupabase();
-    const { error } = await supabase.from("leads").insert({
+    const { error } = await supabase.from("budgetcheck_leads").insert({
       realtor_id: REALTOR.id,
       first_name: first,
       last_name: last,

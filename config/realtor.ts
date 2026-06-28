@@ -39,9 +39,9 @@ export const REALTOR: Realtor = {
   ],
   area: "Miami",
   highlights: [
-    { value: "Miami Native", label: "A true local market expert" },
-    { value: "Cuban-American", label: "Bilingual, multicultural service" },
-    { value: "Apple-Trained", label: "A technology-forward edge" },
-    { value: "FAA-Certified Pilot", label: "Drone-powered home marketing" },
+    { value: "Born & Raised in Miami", label: "Deep, street-level local expertise" },
+    { value: "Fluent in English & Spanish", label: "Full-service for every buyer" },
+    { value: "Apple-Trained Strategist", label: "Business & negotiation honed at Apple" },
+    { value: "FAA-Licensed Drone Pilot", label: "Cinematic marketing few agents offer" },
   ],
 };
