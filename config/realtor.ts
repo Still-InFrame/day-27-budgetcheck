@@ -12,6 +12,8 @@ export interface Realtor {
   /** Leave empty to hide the "call" CTA (email-only). */
   phone: string;
   email: string;
+  /** Real estate license number, shown in the footer for compliance. */
+  license: string;
   /** Tailwind-friendly brand accent (hex). */
   accent: string;
   // --- landing page / marketing ---
@@ -26,14 +28,14 @@ export const REALTOR: Realtor = {
   id: "savion",
   name: "Savion Smith",
   brokerage: "Luxe Properties",
-  phone: "",
-  email: "savion@stillinframe.com",
+  phone: "(305) 495-8231",
+  email: "savion@savispaces.com",
+  license: "3594792",
   accent: "#BE9849",
   tagline: "Miami native, Cuban-American, and your tech-forward advisor for buying right.",
   bio: [
-    "Savion Smith is recognized for his entrepreneurial drive and fearless approach to challenges. His rich cultural heritage and passion for travel and culinary exploration broaden his perspectives, enabling him to connect with clients from various backgrounds. More than a real estate agent, Savion is a trusted advisor, upholding honesty, empathy, and respect in all interactions. His innovative mindset, commitment to self-improvement, and strategic use of technology make him an invaluable asset in the real estate industry.",
-    "A Miami native and proud Cuban-American, Savion stands out with his innovative approach and unwavering commitment to excellence. His journey into real estate, inspired by a family background in the field, showcases his entrepreneurial spirit and self-taught expertise. Founder of Still in Frame Creatives, a creative agency in Miami, Savion has developed a diverse range of design and development skills. His experience at Apple has honed his strategic business insights and deepened his understanding of technology's role in enhancing real estate services. Additionally, Savion's FAA-certified Remote Pilot qualification provides a unique edge in property marketing, offering innovative ways to showcase homes.",
-    "Savion's professional ethos reflects his connection to the city and its diverse communities. He values family and relationships, principles that he integrates into his work, dedicating himself to his client's success and satisfaction. With his unique skill set, entrepreneurial spirit, and innovative approach, Savion Smith is an exceptional real estate agent, consistently exceeding expectations and inspiring confidence in everyone he works with.",
+    "A Miami native and proud Cuban-American, Savion brings entrepreneurial drive and a fearless approach to every client he serves. More than an agent, he's a trusted advisor — leading with honesty, empathy, and respect, and connecting easily with people from all walks of life.",
+    "Self-taught and tech-forward, Savion founded the Miami creative agency Still in Frame Creatives, sharpened his business instincts at Apple, and earned an FAA Remote Pilot certification that gives his listings a cutting-edge marketing edge. Grounded in family and community, he's devoted to his clients' success — and to making the path to homeownership clear, confident, and genuinely enjoyable.",
   ],
   area: "Miami",
   highlights: [

@@ -560,7 +560,7 @@ function Results({
 
   if (!result.qualified) {
     return (
-      <div className="space-y-4">
+      <ResultsShell onRestart={onRestart}>
         <SentBanner name={name} timeline={timeline} />
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <h2 className="text-2xl font-bold text-slate-900">
@@ -576,16 +576,13 @@ function Results({
           </div>
         </div>
         <BasedOn inputs={inputs} />
-        <button onClick={onRestart} className="block w-full text-center text-sm text-slate-400 hover:text-slate-600">
-          ← Start over
-        </button>
         <Disclaimer rate={result.rate} baseRate={result.baseRate} />
-      </div>
+      </ResultsShell>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <ResultsShell onRestart={onRestart}>
       <SentBanner name={name} timeline={timeline} />
 
       {/* headline range */}
@@ -715,11 +712,36 @@ function Results({
         <CTA timeline={timeline} />
       </div>
 
-      <button onClick={onRestart} className="block w-full text-center text-sm text-slate-400 hover:text-slate-600">
-        ← Start over
-      </button>
-
       <Disclaimer rate={result.rate} baseRate={result.baseRate} />
+    </ResultsShell>
+  );
+}
+
+/**
+ * Full-screen, branded "report" shell for the results — so they get a spacious,
+ * centered presentation instead of being squeezed into the hero's side column.
+ */
+function ResultsShell({ onRestart, children }: { onRestart: () => void; children: React.ReactNode }) {
+  return (
+    <div className="fixed inset-0 z-[60] overflow-y-auto bg-slate-50">
+      <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
+          <div className="h-8 w-40 overflow-hidden">
+            <img
+              src="/images/logo.svg"
+              alt="SAVISPACES"
+              className="h-auto w-40 max-w-none -translate-y-[64px]"
+            />
+          </div>
+          <button
+            onClick={onRestart}
+            className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+          >
+            ✕ Start over
+          </button>
+        </div>
+      </div>
+      <div className="mx-auto max-w-3xl space-y-4 px-4 py-8 sm:py-10">{children}</div>
     </div>
   );
 }

@@ -349,12 +349,15 @@ function Footer() {
           <div className="flex flex-col gap-1 text-sm sm:items-end">
             {REALTOR.phone.trim() !== "" && (
               <a href={`tel:${REALTOR.phone.replace(/[^0-9]/g, "")}`} className="hover:text-white">
-                {REALTOR.phone}
+                Mobile: {REALTOR.phone}
               </a>
             )}
             <a href={`mailto:${REALTOR.email}`} className="hover:text-white">
               {REALTOR.email}
             </a>
+            {REALTOR.license.trim() !== "" && (
+              <span className="text-slate-400">License #: {REALTOR.license}</span>
+            )}
           </div>
         </div>
 
