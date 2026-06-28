@@ -1,5 +1,7 @@
 # BudgetCheck — Home Affordability Lead Magnet
 
+**Live:** https://budgetcheck.100dayaichallenge.com
+
 Day 27 of the 100-Day AI Build Challenge.
 
 A mobile-first home-affordability calculator built as a **lead magnet for realtors**. A

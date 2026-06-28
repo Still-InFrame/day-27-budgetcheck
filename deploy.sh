@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-SLUG="{{SLUG}}"
+SLUG="budgetcheck"
 DOMAIN="${SLUG}.100dayaichallenge.com"
 
 # Run the Vercel CLI via npx (global installs fail on this machine; --cache dodges the
