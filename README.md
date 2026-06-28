@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BudgetCheck — Home Affordability Lead Magnet
 
-## Getting Started
+Day 27 of the 100-Day AI Build Challenge.
 
-First, run the development server:
+A mobile-first home-affordability calculator built as a **lead magnet for realtors**. A
+buyer answers a few quick questions, sees a teaser, converts into a lead (stored in
+Supabase), then unlocks a full, accurate affordability breakdown.
+
+## What it does
+
+- **Multi-step wizard** — state, income, monthly debts, down payment, credit range, and an
+  optional "comfortable payment."
+- **Accurate math** — affordability from real lending rules (28/36 → 43% DTI), the **live
+  Freddie Mac 30-yr rate** (via the FRED API, weekly-cached), a credit-tier rate spread,
+  and **state-level property tax + insurance**.
+- **Teaser → gate → results** — shows a price band, captures the lead (name, email, phone,
+  buying timeline, consent), then reveals the full breakdown: price range, monthly payment
+  table, **cash-to-close**, and "what could change your number" insights.
+- **Graceful "not yet" path** — buyers who don't qualify today still get an encouraging,
+  lead-capturing next step rather than a dead end.
+
+## Architecture
+
+| Concern | Where | Why |
+|---|---|---|
+| Property tax / insurance / credit spreads | `config/*` (git-versioned) | Slow-moving; want version history, no runtime DB call |
+| Base mortgage rate | `lib/rate.ts` — FRED fetch, `revalidate: 604800` + `config/base-rate.ts` fallback | Weekly; durable on Vercel's Data Cache |
+| Leads | Supabase `leads` table (RLS, insert-only) | The one thing that's actually a database |
+| Math | `lib/affordability.ts` (pure) + `app/actions.ts` (server) | Computed server-side, never trusts the client |
+
+Built so the deferred pieces (HighLevel CRM push, realtor auth, `/embed/[realtorId]`
+multi-tenant) slot in via existing seams — `realtor_id` on every lead, a single
+`config/realtor.ts` object, and an isolated lead-delivery path.
+
+## Local development
 
 ```bash
+cp .env.local.example .env.local   # fill in FRED + Supabase values
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Set these locally (`.env.local`) **and** in the Vercel dashboard:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `FRED_API_KEY` — free key from https://fred.stlouisfed.org/docs/api/api_key.html
+- `SUPABASE_URL`
+- `SUPABASE_PUBLISHABLE_KEY` — the publishable key is safe here; the `leads` table is
+  insert-only via RLS, so it can write leads but not read them.
 
-## Learn More
+## Deploy
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+./deploy.sh   # deploys to Vercel + attaches the subdomain
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Then add the three env vars in the Vercel dashboard (Settings → Environment Variables).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Data accuracy
 
-## Deploy on Vercel
+Reference figures are labeled "as of June 2026." Refresh annually:
+- Property tax — Tax Foundation / Census ACS table B25103
+- Insurance — LendingTree / Insurance.com state averages
+- Credit spreads — myFICO / Curinos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The output is a credible **estimate**, not a pre-approval — clearly disclaimed in the UI.
