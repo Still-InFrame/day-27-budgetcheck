@@ -6,6 +6,7 @@ import { US_STATES } from "@/config/insurance-by-state";
 import { REALTOR } from "@/config/realtor";
 import { breakdownAtPrice, cashToClose, type BreakdownParams } from "@/lib/breakdown";
 import { money, moneyShort, priceBand } from "@/lib/format";
+import { encodeShare } from "@/lib/share";
 import type { AffordabilityInputs, AffordabilityResult } from "@/lib/types";
 import { estimate, submitLead, type LeadContact } from "./actions";
 
@@ -537,8 +538,75 @@ function Results({
 }) {
   const name = personal.firstName?.trim() || "";
   const timeline = personal.buyingTimeline;
+  return (
+    <ResultsShell onRestart={onRestart}>
+      <SentBanner name={name} timeline={timeline} />
+      <ShareButton inputs={inputs} name={name} />
+      <ResultsReport result={result} inputs={inputs} name={name} timeline={timeline} />
+    </ResultsShell>
+  );
+}
 
-  // Client-side price slider: recompute every cost for whatever price the user picks.
+/** "Share results" — builds a link to the public report that recomputes from inputs. */
+function ShareButton({ inputs, name }: { inputs: Partial<AffordabilityInputs>; name?: string }) {
+  const [copied, setCopied] = useState(false);
+  const onShare = async () => {
+    const url = `${window.location.origin}/r?${encodeShare(inputs, name)}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "My home affordability",
+          text: "Here's the home price range I qualify for:",
+          url,
+        });
+        return;
+      }
+    } catch {
+      /* share cancelled — fall through to copy */
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      /* noop */
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={onShare}
+      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--accent)]/40 bg-white px-4 py-3 text-sm font-semibold text-[var(--accent)] shadow-sm transition hover:bg-[var(--accent)]/5"
+    >
+      {copied ? (
+        "✓ Link copied — share it anywhere"
+      ) : (
+        <>
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
+            <path d="M18 16.1a3 3 0 0 0-2.4 1.2l-6.1-3.5a3 3 0 0 0 0-1.6l6.1-3.5a3 3 0 1 0-1-1.7L8.4 10.6a3 3 0 1 0 0 4.8l6.2 3.6a3 3 0 1 0 3.4-2.9z" />
+          </svg>
+          Share my results
+        </>
+      )}
+    </button>
+  );
+}
+
+/**
+ * The affordability report itself (interactive price slider). Reused by the live
+ * results overlay and the public shared page (/r) — no lead-capture banner here.
+ */
+export function ResultsReport({
+  result,
+  inputs,
+  name,
+  timeline,
+}: {
+  result: AffordabilityResult;
+  inputs: Partial<AffordabilityInputs>;
+  name?: string;
+  timeline?: string;
+}) {
   const params: BreakdownParams = {
     downPayment: result.breakdown.downPayment,
     annualRatePct: result.rate,
@@ -560,8 +628,7 @@ function Results({
 
   if (!result.qualified) {
     return (
-      <ResultsShell onRestart={onRestart}>
-        <SentBanner name={name} timeline={timeline} />
+      <>
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <h2 className="text-2xl font-bold text-slate-900">
             {name ? `${name}, homeownership` : "Homeownership"} is closer than it looks
@@ -577,14 +644,12 @@ function Results({
         </div>
         <BasedOn inputs={inputs} />
         <Disclaimer rate={result.rate} baseRate={result.baseRate} />
-      </ResultsShell>
+      </>
     );
   }
 
   return (
-    <ResultsShell onRestart={onRestart}>
-      <SentBanner name={name} timeline={timeline} />
-
+    <>
       {/* headline range */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-[var(--accent)]">
@@ -713,7 +778,7 @@ function Results({
       </div>
 
       <Disclaimer rate={result.rate} baseRate={result.baseRate} />
-    </ResultsShell>
+    </>
   );
 }
 
