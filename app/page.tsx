@@ -5,15 +5,18 @@ import Calculator from "./Calculator";
 
 const accentStyle = { ["--accent" as string]: REALTOR.accent } as React.CSSProperties;
 const firstName = REALTOR.name.split(" ")[0];
+const LIGHT_GOLD = "#d8bd8a"; // light gold for accents over dark backgrounds
+const YT_ID = "IowDeZXw9G0";
 
 export default function Home() {
   return (
     <main style={accentStyle} className="bg-white text-slate-900">
       <Nav />
       <Hero />
-      <Stats />
+      <Highlights />
       <HowItWorks />
       <WhyBuyers />
+      <VideoSection />
       <AboutAgent />
       <FinalCta />
       <Footer />
@@ -23,14 +26,18 @@ export default function Home() {
 
 /* --------------------------------- Nav --------------------------------- */
 
-function Brand({ light = false }: { light?: boolean }) {
+/** Crops the square SAVISPACES logo down to its horizontal wordmark band. */
+function NavLogo() {
   return (
-    <div className="flex items-center gap-2.5">
-      <img src="/images/logo-mark.png" alt={`${REALTOR.brokerage} logo`} className="h-9 w-9" />
-      <span className={`text-lg font-extrabold tracking-tight ${light ? "text-white" : "text-slate-900"}`}>
-        {REALTOR.brokerage}
-      </span>
-    </div>
+    <a href="#calculator" aria-label={`${REALTOR.name} — ${REALTOR.brokerage}`} className="block">
+      <div className="h-9 w-44 overflow-hidden">
+        <img
+          src="/images/logo.svg"
+          alt="SAVISPACES"
+          className="h-auto w-44 max-w-none -translate-y-[70px]"
+        />
+      </div>
+    </a>
   );
 }
 
@@ -38,7 +45,7 @@ function Nav() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Brand />
+        <NavLogo />
         <div className="hidden items-center gap-7 text-sm font-medium text-slate-600 sm:flex">
           <a href="#how" className="hover:text-slate-900">How it works</a>
           <a href="#about" className="hover:text-slate-900">About {firstName}</a>
@@ -59,8 +66,6 @@ function Nav() {
 function Hero() {
   return (
     <section className="relative isolate overflow-hidden bg-slate-950">
-      {/* image band at the top that fades into the dark section background, so the
-          hero stays clean even as the calculator grows to the tall results view */}
       <div className="absolute inset-x-0 top-0 h-[680px]">
         <img
           src="/images/hero-home.png"
@@ -73,10 +78,9 @@ function Hero() {
 
       <div className="relative mx-auto max-w-6xl px-4 py-12 lg:py-16">
         <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-12">
-          {/* copy */}
           <div className="text-white lg:pt-10">
-            <p className="text-sm font-semibold uppercase tracking-widest text-blue-300">
-              {REALTOR.brokerage}
+            <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: LIGHT_GOLD }}>
+              {REALTOR.name} · {REALTOR.brokerage}
             </p>
             <h1 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
               Know exactly how much home you can afford.
@@ -95,7 +99,6 @@ function Hero() {
             </p>
           </div>
 
-          {/* the lead magnet, right in the hero */}
           <div id="calculator" className="scroll-mt-24">
             <Calculator />
           </div>
@@ -108,27 +111,21 @@ function Hero() {
 function Trust({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      <CheckIcon className="h-4 w-4 text-blue-300" />
+      <CheckIcon className="h-4 w-4" style={{ color: LIGHT_GOLD }} />
       {children}
     </span>
   );
 }
 
-/* -------------------------------- Stats -------------------------------- */
+/* ------------------------------ Highlights ----------------------------- */
 
-function Stats() {
-  const items = [
-    { value: REALTOR.volume, label: "in homes sold" },
-    { value: `${REALTOR.homesSold}+`, label: "families helped" },
-    { value: `${REALTOR.yearsExperience} yrs`, label: `in ${REALTOR.area}` },
-    { value: `${REALTOR.rating}★`, label: "average rating" },
-  ];
+function Highlights() {
   return (
     <section className="border-b border-slate-200 bg-slate-50">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-10 sm:grid-cols-4">
-        {items.map((it) => (
-          <div key={it.label} className="text-center">
-            <p className="text-2xl font-extrabold text-slate-900 sm:text-3xl">{it.value}</p>
+        {REALTOR.highlights.map((it) => (
+          <div key={it.value} className="text-center">
+            <p className="text-lg font-extrabold text-slate-900 sm:text-xl">{it.value}</p>
             <p className="mt-1 text-sm text-slate-500">{it.label}</p>
           </div>
         ))}
@@ -190,7 +187,7 @@ function WhyBuyers() {
     "An interactive slider to explore every price in your range",
   ];
   return (
-    <section className="py-20 sm:py-24">
+    <section className="bg-slate-50 py-20 sm:py-24">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 lg:grid-cols-2">
         <div className="order-2 lg:order-1">
           <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
@@ -226,17 +223,50 @@ function WhyBuyers() {
   );
 }
 
+/* ------------------------------ Video ---------------------------------- */
+
+function VideoSection() {
+  return (
+    <section className="py-20 sm:py-24">
+      <div className="mx-auto max-w-4xl px-4 text-center">
+        <p className="text-sm font-semibold uppercase tracking-widest text-[var(--accent)]">
+          Get to know {firstName}
+        </p>
+        <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+          A different kind of real estate experience
+        </h2>
+        <p className="mx-auto mt-3 max-w-xl text-lg text-slate-500">
+          A quick look at who {firstName} is and how he works with buyers.
+        </p>
+        <div className="mt-8 overflow-hidden rounded-2xl shadow-xl ring-1 ring-slate-200">
+          <div className="aspect-video">
+            <iframe
+              className="h-full w-full"
+              src={`https://www.youtube.com/embed/${YT_ID}`}
+              title={`Meet ${REALTOR.name}`}
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ------------------------------ About agent ---------------------------- */
 
 function AboutAgent() {
+  const hasPhone = REALTOR.phone.trim() !== "";
   return (
     <section id="about" className="scroll-mt-20 bg-slate-50 py-20 sm:py-24">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 lg:grid-cols-[0.8fr_1fr]">
-        <div>
+      <div className="mx-auto grid max-w-6xl items-start gap-12 px-4 lg:grid-cols-[0.8fr_1fr]">
+        <div className="lg:sticky lg:top-24">
           <img
-            src="/images/agent.png"
+            src="/images/agent.jpg"
             alt={`${REALTOR.name}, real estate agent`}
-            className="mx-auto w-full max-w-sm rounded-3xl object-cover shadow-xl"
+            className="mx-auto w-full max-w-sm rounded-3xl bg-white object-cover shadow-xl"
           />
         </div>
         <div>
@@ -249,17 +279,27 @@ function AboutAgent() {
           <p className="mt-1 text-lg font-medium text-slate-500">
             {REALTOR.brokerage} · {REALTOR.tagline}
           </p>
-          <p className="mt-5 leading-relaxed text-slate-600">{REALTOR.bio}</p>
+          <div className="mt-5 space-y-4 leading-relaxed text-slate-600">
+            {REALTOR.bio.map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <a
-              href={`tel:${REALTOR.phone.replace(/[^0-9]/g, "")}`}
-              className="inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:opacity-90"
-            >
-              Call {firstName}
-            </a>
+            {hasPhone && (
+              <a
+                href={`tel:${REALTOR.phone.replace(/[^0-9]/g, "")}`}
+                className="inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:opacity-90"
+              >
+                Call {firstName}
+              </a>
+            )}
             <a
               href={`mailto:${REALTOR.email}`}
-              className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:bg-white"
+              className={
+                hasPhone
+                  ? "inline-flex items-center justify-center rounded-xl border border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:bg-white"
+                  : "inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:opacity-90"
+              }
             >
               Email {firstName}
             </a>
@@ -279,12 +319,12 @@ function FinalCta() {
         <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
           Ready to find your number?
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-lg text-blue-100">
+        <p className="mx-auto mt-3 max-w-xl text-lg text-white/90">
           See what you can afford in under a minute — then let {firstName} help you make it real.
         </p>
         <a
           href="#calculator"
-          className="mt-8 inline-flex items-center justify-center rounded-xl bg-white px-8 py-4 text-base font-semibold text-[var(--accent)] shadow-lg transition hover:bg-blue-50"
+          className="mt-8 inline-flex items-center justify-center rounded-xl bg-white px-8 py-4 text-base font-semibold text-[var(--accent)] shadow-lg transition hover:bg-white/90"
         >
           Get my free estimate →
         </a>
@@ -300,11 +340,18 @@ function Footer() {
     <footer className="bg-slate-900 text-slate-300">
       <div className="mx-auto max-w-6xl px-4 py-14">
         <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-          <Brand light />
+          <div>
+            <p className="text-lg font-extrabold text-white">{REALTOR.name}</p>
+            <p className="text-sm font-medium" style={{ color: LIGHT_GOLD }}>
+              {REALTOR.brokerage}
+            </p>
+          </div>
           <div className="flex flex-col gap-1 text-sm sm:items-end">
-            <a href={`tel:${REALTOR.phone.replace(/[^0-9]/g, "")}`} className="hover:text-white">
-              {REALTOR.phone}
-            </a>
+            {REALTOR.phone.trim() !== "" && (
+              <a href={`tel:${REALTOR.phone.replace(/[^0-9]/g, "")}`} className="hover:text-white">
+                {REALTOR.phone}
+              </a>
+            )}
             <a href={`mailto:${REALTOR.email}`} className="hover:text-white">
               {REALTOR.email}
             </a>
@@ -338,7 +385,8 @@ function Footer() {
                       href={s.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-300 underline decoration-slate-600 underline-offset-2 hover:decoration-current"
+                      className="underline decoration-slate-600 underline-offset-2 hover:decoration-current"
+                      style={{ color: LIGHT_GOLD }}
                     >
                       {s.source}
                     </a>
@@ -374,9 +422,9 @@ function Footer() {
 
 /* -------------------------------- Icons -------------------------------- */
 
-function CheckIcon({ className }: { className?: string }) {
+function CheckIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg className={className} viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+    <svg className={className} style={style} viewBox="0 0 20 20" fill="currentColor" aria-hidden>
       <path
         fillRule="evenodd"
         d="M16.704 5.29a1 1 0 0 1 .006 1.414l-7.5 7.6a1 1 0 0 1-1.43-.006l-3.5-3.6a1 1 0 1 1 1.434-1.394l2.785 2.864 6.79-6.882a1 1 0 0 1 1.415-.006Z"

@@ -21,7 +21,7 @@ interface FormState {
 }
 
 const EMPTY: FormState = {
-  state: "",
+  state: "FL",
   annualIncome: "",
   monthlyDebts: "",
   downPayment: "",
@@ -793,17 +793,23 @@ function CTA({ timeline }: { timeline?: string }) {
         {REALTOR.name} can help you get pre-approved and find homes in your range.
       </p>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
-        <a
-          href={`tel:${REALTOR.phone.replace(/[^0-9]/g, "")}`}
-          className="rounded-xl bg-[var(--accent)] px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:opacity-90"
-        >
-          Call {REALTOR.name.split(" ")[0]}
-        </a>
+        {REALTOR.phone.trim() !== "" && (
+          <a
+            href={`tel:${REALTOR.phone.replace(/[^0-9]/g, "")}`}
+            className="rounded-xl bg-[var(--accent)] px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:opacity-90"
+          >
+            Call {REALTOR.name.split(" ")[0]}
+          </a>
+        )}
         <a
           href={`mailto:${REALTOR.email}`}
-          className="rounded-xl border border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
+          className={
+            REALTOR.phone.trim() !== ""
+              ? "rounded-xl border border-slate-300 px-6 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50"
+              : "rounded-xl bg-[var(--accent)] px-6 py-3 text-base font-semibold text-white shadow-sm transition hover:opacity-90"
+          }
         >
-          Email instead
+          {REALTOR.phone.trim() !== "" ? "Email instead" : `Email ${REALTOR.name.split(" ")[0]}`}
         </a>
       </div>
     </div>
