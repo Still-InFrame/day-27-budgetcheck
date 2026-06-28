@@ -2,6 +2,7 @@ import { legalDisclaimer } from "@/config/legal";
 import { REALTOR } from "@/config/realtor";
 import { DATA_SOURCES, DATA_UPDATED, METHODOLOGY } from "@/config/sources";
 import Calculator from "./Calculator";
+import VideoPlayer from "./VideoPlayer";
 
 const accentStyle = { ["--accent" as string]: REALTOR.accent } as React.CSSProperties;
 const firstName = REALTOR.name.split(" ")[0];
@@ -238,17 +239,8 @@ function VideoSection() {
         <p className="mx-auto mt-3 max-w-xl text-lg text-slate-500">
           A quick look at who {firstName} is and how he works with buyers.
         </p>
-        <div className="mt-8 overflow-hidden rounded-2xl shadow-xl ring-1 ring-slate-200">
-          <div className="aspect-video">
-            <iframe
-              className="h-full w-full"
-              src={`https://www.youtube.com/embed/${YT_ID}`}
-              title={`Meet ${REALTOR.name}`}
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-            />
-          </div>
+        <div className="mt-8">
+          <VideoPlayer videoId={YT_ID} accent={REALTOR.accent} />
         </div>
       </div>
     </section>
