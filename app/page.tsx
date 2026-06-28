@@ -13,7 +13,6 @@ export default function Home() {
       <Hero />
       <Stats />
       <HowItWorks />
-      <ToolSection />
       <WhyBuyers />
       <AboutAgent />
       <FinalCta />
@@ -59,43 +58,46 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="relative isolate overflow-hidden">
-      <img
-        src="/images/hero-home.png"
-        alt="A beautiful modern home at golden hour"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/65 to-slate-950/25" />
-      <div className="relative mx-auto max-w-6xl px-4 py-24 sm:py-32 lg:py-40">
-        <div className="max-w-xl">
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-300">
-            {REALTOR.brokerage}
-          </p>
-          <h1 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Know exactly how much home you can afford.
-          </h1>
-          <p className="mt-5 max-w-lg text-lg leading-relaxed text-slate-200">
-            Get a personalized price range in under a minute — using today's live mortgage rates and your
-            state's real costs. No spam, no guesswork.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a
-              href="#calculator"
-              className="inline-flex items-center justify-center rounded-xl bg-[var(--accent)] px-7 py-3.5 text-base font-semibold text-white shadow-lg transition hover:opacity-90"
-            >
-              Get my free estimate →
-            </a>
-            <a
-              href="#how"
-              className="inline-flex items-center justify-center rounded-xl border border-white/30 bg-white/10 px-7 py-3.5 text-base font-semibold text-white backdrop-blur transition hover:bg-white/20"
-            >
-              See how it works
-            </a>
+    <section className="relative isolate overflow-hidden bg-slate-950">
+      {/* image band at the top that fades into the dark section background, so the
+          hero stays clean even as the calculator grows to the tall results view */}
+      <div className="absolute inset-x-0 top-0 h-[680px]">
+        <img
+          src="/images/hero-home.png"
+          alt="A beautiful modern home at golden hour"
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/92 via-slate-950/70 to-slate-950/40" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-slate-950" />
+      </div>
+
+      <div className="relative mx-auto max-w-6xl px-4 py-12 lg:py-16">
+        <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-12">
+          {/* copy */}
+          <div className="text-white lg:pt-10">
+            <p className="text-sm font-semibold uppercase tracking-widest text-blue-300">
+              {REALTOR.brokerage}
+            </p>
+            <h1 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
+              Know exactly how much home you can afford.
+            </h1>
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-slate-200">
+              A personalized price range in under a minute — using today's live mortgage rates and your
+              state's real costs. No spam, no guesswork.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-300">
+              <Trust>Instant results</Trust>
+              <Trust>Live mortgage rates</Trust>
+              <Trust>100% free</Trust>
+            </div>
+            <p className="mt-6 text-sm text-slate-400 lg:hidden">
+              Start below — it only takes a minute ↓
+            </p>
           </div>
-          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-300">
-            <Trust>Instant results</Trust>
-            <Trust>Live mortgage rates</Trust>
-            <Trust>100% free</Trust>
+
+          {/* the lead magnet, right in the hero */}
+          <div id="calculator" className="scroll-mt-24">
+            <Calculator />
           </div>
         </div>
       </div>
@@ -171,31 +173,6 @@ function HowItWorks() {
               <p className="mt-2 text-sm leading-relaxed text-slate-500">{s.body}</p>
             </div>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ------------------------------ Tool section --------------------------- */
-
-function ToolSection() {
-  return (
-    <section id="calculator" className="scroll-mt-20 bg-slate-50 py-20 sm:py-24">
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[var(--accent)]">
-            Free affordability calculator
-          </p>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-            What's your number?
-          </h2>
-          <p className="mt-3 text-lg text-slate-500">
-            Takes under a minute, and your results are yours instantly.
-          </p>
-        </div>
-        <div className="mt-10">
-          <Calculator />
         </div>
       </div>
     </section>
