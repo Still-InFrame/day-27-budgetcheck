@@ -4,4 +4,3 @@
  * Keep this reasonably fresh so the fallback is never wildly off.
  */
 export const FALLBACK_BASE_RATE = 6.49;
-export const FALLBACK_BASE_RATE_AS_OF = "June 2026";

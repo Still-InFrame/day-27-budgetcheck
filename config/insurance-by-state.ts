@@ -6,7 +6,7 @@
  * These are state averages for a typical single-family home; an individual
  * quote varies with home value, age, and coverage.
  */
-export const INSURANCE_ANNUAL: Record<string, number> = {
+const INSURANCE_ANNUAL: Record<string, number> = {
   AL: 2200,
   AK: 1100,
   AZ: 1900,
@@ -61,7 +61,7 @@ export const INSURANCE_ANNUAL: Record<string, number> = {
 };
 
 /** National-average fallback if a state code is missing. */
-export const NATIONAL_AVG_INSURANCE = 2395;
+const NATIONAL_AVG_INSURANCE = 2395;
 
 export function insuranceAnnual(stateCode: string): number {
   return INSURANCE_ANNUAL[stateCode] ?? NATIONAL_AVG_INSURANCE;

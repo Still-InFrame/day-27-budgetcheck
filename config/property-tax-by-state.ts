@@ -61,7 +61,7 @@ export const PROPERTY_TAX_RATE: Record<string, number> = {
 };
 
 /** National-average fallback (~0.86%) if a state code is missing. */
-export const NATIONAL_AVG_TAX_RATE = 0.0086;
+const NATIONAL_AVG_TAX_RATE = 0.0086;
 
 export function propertyTaxRate(stateCode: string): number {
   return PROPERTY_TAX_RATE[stateCode] ?? NATIONAL_AVG_TAX_RATE;

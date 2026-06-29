@@ -7,7 +7,7 @@ import type { PaymentBreakdown } from "@/lib/types";
  */
 
 /** Monthly principal + interest for a given loan amount. */
-export function monthlyPI(loan: number, annualRatePct: number, termYears: number): number {
+function monthlyPI(loan: number, annualRatePct: number, termYears: number): number {
   if (loan <= 0) return 0;
   const r = annualRatePct / 100 / 12;
   const n = termYears * 12;
