@@ -7,11 +7,10 @@ import { US_STATES } from "@/config/insurance-by-state";
 import { REALTOR } from "@/config/realtor";
 import { breakdownAtPrice, cashToClose, type BreakdownParams } from "@/lib/breakdown";
 import { money, moneyShort, priceBand } from "@/lib/format";
-import { encodeShare } from "@/lib/share";
 import type { AffordabilityInputs, AffordabilityResult } from "@/lib/types";
 import { estimate, submitLead, type LeadContact } from "./actions";
 
-type Phase = "wizard" | "gate" | "results";
+type Phase = "wizard" | "gate";
 
 interface FormState {
   state: string;
@@ -496,76 +495,9 @@ function Field({
 
 /* ------------------------------- Results ------------------------------- */
 
-function Results({
-  result,
-  inputs,
-  personal,
-  onRestart,
-}: {
-  result: AffordabilityResult;
-  inputs: Partial<AffordabilityInputs>;
-  personal: { firstName: string; buyingTimeline: string };
-  onRestart: () => void;
-}) {
-  const name = personal.firstName?.trim() || "";
-  const timeline = personal.buyingTimeline;
-  return (
-    <ResultsShell onRestart={onRestart}>
-      <SentBanner name={name} timeline={timeline} />
-      <ShareButton inputs={inputs} name={name} />
-      <ResultsReport result={result} inputs={inputs} name={name} timeline={timeline} />
-    </ResultsShell>
-  );
-}
-
-/** "Share results" — builds a link to the public report that recomputes from inputs. */
-function ShareButton({ inputs, name }: { inputs: Partial<AffordabilityInputs>; name?: string }) {
-  const [copied, setCopied] = useState(false);
-  const onShare = async () => {
-    const url = `${window.location.origin}/r?${encodeShare(inputs, name)}`;
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: "My home affordability",
-          text: "Here's the home price range I qualify for:",
-          url,
-        });
-        return;
-      }
-    } catch {
-      /* share cancelled — fall through to copy */
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
-    } catch {
-      /* noop */
-    }
-  };
-  return (
-    <button
-      type="button"
-      onClick={onShare}
-      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--accent)]/40 bg-white px-4 py-3 text-sm font-semibold text-[var(--accent)] shadow-sm transition hover:bg-[var(--accent)]/5"
-    >
-      {copied ? (
-        "✓ Link copied — share it anywhere"
-      ) : (
-        <>
-          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden>
-            <path d="M18 16.1a3 3 0 0 0-2.4 1.2l-6.1-3.5a3 3 0 0 0 0-1.6l6.1-3.5a3 3 0 1 0-1-1.7L8.4 10.6a3 3 0 1 0 0 4.8l6.2 3.6a3 3 0 1 0 3.4-2.9z" />
-          </svg>
-          Share my results
-        </>
-      )}
-    </button>
-  );
-}
-
 /**
- * The affordability report itself (interactive price slider). Reused by the live
- * results overlay and the public shared page (/r) — no lead-capture banner here.
+ * The affordability report itself (interactive price slider). Rendered on the
+ * dedicated results page (/r/[id]) — no lead-capture banner here.
  */
 export function ResultsReport({
   result,
@@ -753,35 +685,6 @@ export function ResultsReport({
   );
 }
 
-/**
- * Full-screen, branded "report" shell for the results — so they get a spacious,
- * centered presentation instead of being squeezed into the hero's side column.
- */
-function ResultsShell({ onRestart, children }: { onRestart: () => void; children: React.ReactNode }) {
-  return (
-    <div className="fixed inset-0 z-[60] overflow-y-auto bg-slate-50">
-      <div className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <div className="h-8 w-40 overflow-hidden">
-            <img
-              src="/images/logo.svg"
-              alt="SAVISPACES"
-              className="h-auto w-40 max-w-none -translate-y-[64px]"
-            />
-          </div>
-          <button
-            onClick={onRestart}
-            className="rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-          >
-            ✕ Start over
-          </button>
-        </div>
-      </div>
-      <div className="mx-auto max-w-3xl space-y-4 px-4 py-8 sm:py-10">{children}</div>
-    </div>
-  );
-}
-
 function stateName(code: string): string {
   return US_STATES.find((s) => s.code === code)?.name ?? "Your state";
 }
@@ -870,22 +773,6 @@ function CTA({ timeline }: { timeline?: string }) {
           {REALTOR.phone.trim() !== "" ? "Email instead" : `Email ${REALTOR.name.split(" ")[0]}`}
         </a>
       </div>
-    </div>
-  );
-}
-
-/** Confirms the lead reached the realtor — personal, and sets the connection expectation. */
-function SentBanner({ name, timeline }: { name: string; timeline?: string }) {
-  return (
-    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center">
-      <p className="text-sm font-semibold text-emerald-900">
-        ✓ {name ? `${name}, your` : "Your"} personalized estimate has been shared with {REALTOR.name}.
-      </p>
-      <p className="mt-0.5 text-xs text-emerald-700">
-        {timeline && timeline !== "Just exploring"
-          ? `They'll reach out personally to help with homes in your range.`
-          : `They're here whenever you're ready — no pressure.`}
-      </p>
     </div>
   );
 }
